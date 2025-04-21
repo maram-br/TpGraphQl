@@ -1,0 +1,53 @@
+
+###########################
+#          Types          #
+###########################
+
+type Cv {
+  id: ID!
+  name: String!
+  age: Int!
+  job: String!
+  user: User!
+  skills: [Skill!]
+}
+
+type Skill {
+  id: ID!
+  designation: String!
+  cvs: [Cv!]
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: Role!
+  cvs: [Cv!]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+type CVSkill {
+  cv: Cv!
+  skill: Skill!
+}
+
+
+
+###########################
+#          QUERIES         #
+###########################
+
+type Query {
+  # Récupération de tous les CVs
+  cvs: [Cv!]!
+  
+  # Récupération d'un CV spécifique par ID
+  cv(id: ID!): Cv
+  
+  
+}
