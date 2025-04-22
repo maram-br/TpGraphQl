@@ -1,13 +1,13 @@
-import { users, skills, cvs } from "./data";
+import { DB } from "./data";
 
 export interface Context {
-  users: typeof users;
-  skills: typeof skills;
-  cvs: typeof cvs;
+  users: typeof DB.users;
+  skills: typeof DB.skills;
+  cvs: typeof DB.cvs;
 }
 
 export const context: Context = {
-  users,
-  skills,
-  cvs,
+  users: DB.users,
+  skills: DB.skills,
+  cvs: DB.cvs,
 };
