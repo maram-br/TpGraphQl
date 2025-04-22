@@ -1,0 +1,73 @@
+import * as fs from "fs";
+import * as path from "path";
+import { DB } from "../data";
+
+// Fonction utilitaire pour sauvegarder les données dans data.ts
+const saveDataToFile = () => {
+    const dataPath = path.resolve(__dirname, "../data.ts");
+    const fileContent = `
+        export const DB = ${JSON.stringify(DB, null, 2)};
+    `;
+
+    fs.writeFileSync(dataPath, fileContent, { encoding: "utf-8" });
+};
+
+// Définition des mutations
+export const Mutation = {
+    createCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
+        const cvsLength = DB.cvs.length;
+        input.id = cvsLength === 0 ? 1 : DB.cvs[cvsLength - 1].id + 1;
+
+        const user = DB.users.find(u => u.id === input.userId);
+        if (!user) throw new Error("User not found");
+
+        if (input.skillIds) {
+            input.skillIds.forEach((id: number) => {
+                const skill = DB.skills.find(s => s.id === id);
+                if (!skill) throw new Error(`Skill with id ${id} not found`);
+            });
+        }
+
+        DB.cvs.push(input);
+
+        saveDataToFile(); // Sauvegardez les données après l'ajout
+        return input;
+    },
+
+    updateCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
+        const index = DB.cvs.findIndex(cv => cv.id === input.id);
+        if (index === -1) throw new Error("CV not found");
+
+        const updated = {
+            ...DB.cvs[index],
+            ...input,
+        };
+
+        if (input.userId) {
+            const user = DB.users.find(u => u.id === input.userId);
+            if (!user) throw new Error("User not found");
+        }
+
+        if (input.skillIds) {
+            input.skillIds.forEach((id: number) => {
+                const exists = DB.skills.some(s => s.id === id);
+                if (!exists) throw new Error(`Skill with id ${id} not found`);
+            });
+        }
+
+        DB.cvs[index] = updated;
+
+        saveDataToFile(); // Sauvegardez les données après la mise à jour
+        return updated;
+    },
+
+    removeCv: (_: any, { id }: { id: number }, { db }: { db: any }) => {
+        const index = DB.cvs.findIndex(cv => cv.id === id);
+        if (index === -1) throw new Error("CV not found");
+
+        DB.cvs.splice(index, 1);
+
+        saveDataToFile(); // Sauvegardez les données après la suppression
+        return true;
+    },
+};
