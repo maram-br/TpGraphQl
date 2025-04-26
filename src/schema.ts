@@ -3,6 +3,8 @@ import { Query }    from "./resolvers/Query";
 import { Cv }       from "./resolvers/Cv";
 import path from "path";
 import fs from "fs";
+import {Mutation} from "./resolvers/Mutation";
+import { Subscription } from "./resolvers/Subscription";
 
 // Charge tous les .gql sous src/schema/
 const typeDefs = fs.readFileSync(
@@ -11,5 +13,9 @@ const typeDefs = fs.readFileSync(
   );
 export const schema = createSchema({
   typeDefs,
-  resolvers: { Query,Cv},
+  resolvers: {
+    Query,
+    Cv,
+    Mutation,
+    Subscription},
 });

@@ -1,4 +1,3 @@
-
 ###########################
 #          Types          #
 ###########################
@@ -35,8 +34,26 @@ type CVSkill {
   cv: Cv!
   skill: Skill!
 }
+###########################
+#          Inputs         #
+###########################
 
+input CreateCvInput {
+  name: String!
+  age: Int!
+  job: String!
+  userId: Int!
+  skillIds: [Int!]!
+}
 
+input UpdateCvInput {
+  id: Int!
+  name: String
+  age: Int
+  job: String
+  userId: Int
+  skillIds: [Int!]
+}
 
 ###########################
 #          QUERIES         #
@@ -50,4 +67,22 @@ type Query {
   cv(id: ID!): Cv
   
   
+}
+
+###########################
+#         Mutations       #
+###########################
+
+type Mutation {
+  createCv(input: CreateCvInput!): Cv!
+  updateCv(input: UpdateCvInput!): Cv!
+  removeCv(id: Int!): Boolean!
+}
+
+
+
+type Subscription {
+  cvAdded: Cv!
+  cvUpdated: Cv!
+  cvDeleted: Cv!
 }
