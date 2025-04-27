@@ -5,6 +5,9 @@ import path from "path";
 import fs from "fs";
 import {Mutation} from "./resolvers/Mutation";
 
+import { Subscription } from "./resolvers/Subscription";
+
+
 // Charge tous les .gql sous src/schema/
 const typeDefs = fs.readFileSync(
     path.join(__dirname, "../schema/schema.gql"),
@@ -15,6 +18,11 @@ export const schema = createSchema({
   resolvers: {
     Query,
     Cv,
+
+    Mutation,
+    Subscription},
+
     Mutation
   },
+
 });

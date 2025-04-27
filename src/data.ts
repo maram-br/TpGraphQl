@@ -57,9 +57,15 @@
   "cvs": [
     {
       "id": 1,
+
+      "name": "Updated Name",
+      "age": 29,
+      "job": "Updated Job Title",
+
       "name": "Alice CV",
       "age": 30,
       "job": "Fullstack Dev",
+
       "userId": 1,
       "skillIds": [
         1,
@@ -82,7 +88,11 @@
       "age": 22,
       "job": "FrontEnd Dev",
       "userId": 2,
+
+      "skillIds": [
+
       "skillIds": [ 
+
         1,
         2
       ]

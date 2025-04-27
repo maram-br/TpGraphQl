@@ -2,6 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { DB } from "../data";
 
+import { pubSub } from "../context";
+
+
 // Fonction utilitaire pour sauvegarder les données dans data.ts
 const saveDataToFile = () => {
     const dataPath = path.resolve(__dirname, "../data.ts");
@@ -31,6 +34,9 @@ export const Mutation = {
         DB.cvs.push(input);
 
         saveDataToFile(); // Sauvegardez les données après l'ajout
+
+        pubSub.publish("CV_ADDED", { cvAdded: input }); 
+
         return input;
     },
 
@@ -58,6 +64,9 @@ export const Mutation = {
         DB.cvs[index] = updated;
 
         saveDataToFile(); // Sauvegardez les données après la mise à jour
+
+        pubSub.publish("CV_UPDATED", { cvUpdated: updated }); 
+
         return updated;
     },
 
@@ -65,9 +74,17 @@ export const Mutation = {
         const index = DB.cvs.findIndex(cv => cv.id === id);
         if (index === -1) throw new Error("CV not found");
 
+        const cv = DB.cvs[index];
+        DB.cvs.splice(index, 1);
+
+        saveDataToFile(); 
+        pubSub.publish("CV_DELETED", { cvDeleted: cv }); 
+
+
         DB.cvs.splice(index, 1);
 
         saveDataToFile(); // Sauvegardez les données après la suppression
+
         return true;
     },
 };

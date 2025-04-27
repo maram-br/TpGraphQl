@@ -77,4 +77,15 @@ type Mutation {
   createCv(input: CreateCvInput!): Cv!
   updateCv(input: UpdateCvInput!): Cv!
   removeCv(id: Int!): Boolean!
+
 }
+
+
+
+type Subscription {
+  cvAdded: Cv!
+  cvUpdated: Cv!
+  cvDeleted: Cv!
+}
+
+
