@@ -58,10 +58,6 @@
     {
       "id": 1,
 
-      "name": "Updated Name",
-      "age": 29,
-      "job": "Updated Job Title",
-
       "name": "Alice CV",
       "age": 30,
       "job": "Fullstack Dev",
@@ -88,8 +84,6 @@
       "age": 22,
       "job": "FrontEnd Dev",
       "userId": 2,
-
-      "skillIds": [
 
       "skillIds": [ 
 

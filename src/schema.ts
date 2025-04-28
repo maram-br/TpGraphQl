@@ -22,7 +22,6 @@ export const schema = createSchema({
     Mutation,
     Subscription},
 
-    Mutation
   },
 
-});
+);
