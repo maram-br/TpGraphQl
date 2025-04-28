@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // You can change to "postgresql" or others later
+  url      = env("DATABASE_URL")
+}
+
+model Cv {
+  id      Int     @id @default(autoincrement())
+  name    String
+  age     Int
+  job     String
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int
+  skills  CvSkill[]
+}
+
+model Skill {
+  id       Int       @id @default(autoincrement())
+  designation String
+  cvs      CvSkill[]
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  role  String
+  cvs   Cv[]
+}
+
+model CvSkill {
+  cvId    Int
+  skillId Int
+  cv      Cv      @relation(fields: [cvId], references: [id])
+  skill   Skill   @relation(fields: [skillId], references: [id])
+
+  @@id([cvId, skillId])
+}
