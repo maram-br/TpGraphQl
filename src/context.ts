@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { createPubSub } from "graphql-yoga";
+import { createPubSub } from 'graphql-yoga';
+
 import { DB } from "./data"; 
 
 
@@ -11,7 +12,7 @@ type Events = {
   CV_DELETED: [{ cvDeleted: any }];
 };
 
-export const pubSub = createPubSub();
+const pubSub = createPubSub<Events>();
 
 export interface Context {
   prisma: PrismaClient;
@@ -20,6 +21,7 @@ export interface Context {
   skills: typeof DB.skills;
   cvs: typeof DB.cvs;
   pubSub: typeof pubSub;
+
 }
 
 export const context: Context = {
