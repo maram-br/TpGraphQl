@@ -9,9 +9,9 @@ export const Mutation = {
     
     if (!user) throw new Error(`User with id ${input.userId} not found`);
 
-    // Validate skills if provided
+    
     if (input.skillIds && input.skillIds.length > 0) {
-      // Check if all skills exist
+      
       const skills = await prisma.skill.findMany({
         where: {
           id: { in: input.skillIds }
@@ -23,7 +23,7 @@ export const Mutation = {
       }
     }
 
-    // Create the CV with Prisma
+
     const newCv = await prisma.cv.create({
       data: {
         name: input.name,
@@ -50,21 +50,21 @@ export const Mutation = {
       }
     });
 
-    // Publish the event for subscribers with typed pubSub
+    
     await pubSub.publish("CV_ADDED", { cvAdded: newCv });
     
     return newCv;
   },
 
   updateCv: async (_parent: any, { input }: any, { prisma, pubSub }: Context) => {
-    // Check if CV exists
+    
     const existingCv = await prisma.cv.findUnique({
       where: { id: input.id }
     });
     
     if (!existingCv) throw new Error(`CV with id ${input.id} not found`);
 
-    // Check if user exists if userId is provided
+    
     if (input.userId) {
       const user = await prisma.user.findUnique({
         where: { id: input.userId }
@@ -86,9 +86,9 @@ export const Mutation = {
       };
     }
 
-    // Handle skill updates 
+     
     if (input.skillIds !== undefined) {
-      // validate all skills exist
+      
       if (input.skillIds.length > 0) {
         const skills = await prisma.skill.findMany({
           where: {
@@ -101,14 +101,14 @@ export const Mutation = {
         }
       }
       
-      // First delete all existing connections
+      
       await prisma.cvSkill.deleteMany({
         where: {
           cvId: input.id
         }
       });
       
-      // Then create new connections
+      
       if (input.skillIds.length > 0) {
         updateData.skills = {
           create: input.skillIds.map((skillId: number) => ({
@@ -120,7 +120,7 @@ export const Mutation = {
       }
     }
 
-    // Update the CV with Prisma
+    
     const updatedCv = await prisma.cv.update({
       where: { id: input.id },
       data: updateData,
@@ -134,14 +134,14 @@ export const Mutation = {
       }
     });
 
-    // Publish the event for subscribers with typed pubSub
+    
     await pubSub.publish("CV_UPDATED", { cvUpdated: updatedCv });
     
     return updatedCv;
   },
 
   removeCv: async (_parent: any, { id }: { id: number }, { prisma, pubSub }: Context) => {
-    // Check if CV exists
+    
     const cv = await prisma.cv.findUnique({
       where: { id },
       include: {
@@ -156,19 +156,19 @@ export const Mutation = {
     
     if (!cv) throw new Error(`CV with id ${id} not found`);
 
-    // Delete all related CvSkill records first to avoid foreign key constraints
+    
     await prisma.cvSkill.deleteMany({
       where: {
         cvId: id
       }
     });
 
-    // Delete the CV with Prisma
+    
     await prisma.cv.delete({
       where: { id }
     });
 
-    // Publish the event for subscribers with typed pubSub
+    
     await pubSub.publish("CV_DELETED", { cvDeleted: cv });
     
     return true;
