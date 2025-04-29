@@ -2,6 +2,7 @@
   "dependencies": {
     "@graphql-tools/load-files": "^7.0.1",
     "@graphql-tools/schema": "10.0.23",
+    "@prisma/client": "^6.6.0",
     "@types/node": "^22.14.1",
     "graphql": "16.10.0",
     "graphql-subscriptions": "^3.0.0",
@@ -30,6 +31,7 @@
   "description": "",
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "prisma": "^6.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

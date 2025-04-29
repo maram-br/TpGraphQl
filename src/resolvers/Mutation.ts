@@ -1,90 +1,62 @@
-import * as fs from "fs";
-import * as path from "path";
-import { DB } from "../data";
+import { PrismaClient } from '@prisma/client';
+import { Context } from "../context";
 
-import { pubSub } from "../context";
+const prisma = new PrismaClient();
 
-
-// Fonction utilitaire pour sauvegarder les données dans data.ts
-const saveDataToFile = () => {
-    const dataPath = path.resolve(__dirname, "../data.ts");
-    const fileContent = `
-        export const DB = ${JSON.stringify(DB, null, 2)};
-    `;
-
-    fs.writeFileSync(dataPath, fileContent, { encoding: "utf-8" });
-};
-
-// Définition des mutations
 export const Mutation = {
-    createCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
-        const cvsLength = DB.cvs.length;
-        input.id = cvsLength === 0 ? 1 : DB.cvs[cvsLength - 1].id + 1;
+  // Create a CV
+  createCv: async (_parent: any, { input }: { input: CreateCvInput }, { pubSub }: Context) => {
+    const { name, age, job, userId, skillIds } = input;
 
-        const user = DB.users.find(u => u.id === input.userId);
-        if (!user) throw new Error("User not found");
-
-        if (input.skillIds) {
-            input.skillIds.forEach((id: number) => {
-                const skill = DB.skills.find(s => s.id === id);
-                if (!skill) throw new Error(`Skill with id ${id} not found`);
-            });
+    // Create the new CV
+    const cv = await prisma.cv.create({
+      data: {
+        name,
+        age,
+        job,
+        userId,
+        skills: {
+          connect: skillIds.map((id: number) => ({ id }))
         }
+      },
+    });
 
-        DB.cvs.push(input);
+    // Publish to subscription after creation
+    pubSub.publish("CV_ADDED", { cvAdded: cv });
 
-        saveDataToFile(); // Sauvegardez les données après l'ajout
+    return cv;
+  },
 
-        pubSub.publish("CV_ADDED", { cvAdded: input }); 
+  // Update a CV
+  updateCv: async (_parent: any, { input }: { input: UpdateCvInput }, { pubSub }: Context) => {
+    const { id, name, age, job, userId, skillIds } = input;
 
-        return input;
-    },
+    const cv = await prisma.cv.update({
+      where: { id },
+      data: {
+        name,
+        age,
+        job,
+        userId,
+        skills: {
+          set: skillIds.map((id: number) => ({ id })),
+        },
+      },
+    });
 
-    updateCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
-        const index = DB.cvs.findIndex(cv => cv.id === input.id);
-        if (index === -1) throw new Error("CV not found");
+    pubSub.publish("CV_UPDATED", { cvUpdated: cv });
 
-        const updated = {
-            ...DB.cvs[index],
-            ...input,
-        };
+    return cv;
+  },
 
-        if (input.userId) {
-            const user = DB.users.find(u => u.id === input.userId);
-            if (!user) throw new Error("User not found");
-        }
+  // Remove a CV
+  removeCv: async (_parent: any, { id }: { id: number }, { pubSub }: Context) => {
+    const cv = await prisma.cv.delete({
+      where: { id },
+    });
 
-        if (input.skillIds) {
-            input.skillIds.forEach((id: number) => {
-                const exists = DB.skills.some(s => s.id === id);
-                if (!exists) throw new Error(`Skill with id ${id} not found`);
-            });
-        }
+    pubSub.publish("CV_DELETED", { cvDeleted: cv });
 
-        DB.cvs[index] = updated;
-
-        saveDataToFile(); // Sauvegardez les données après la mise à jour
-
-        pubSub.publish("CV_UPDATED", { cvUpdated: updated }); 
-
-        return updated;
-    },
-
-    removeCv: (_: any, { id }: { id: number }, { db }: { db: any }) => {
-        const index = DB.cvs.findIndex(cv => cv.id === id);
-        if (index === -1) throw new Error("CV not found");
-
-        const cv = DB.cvs[index];
-        DB.cvs.splice(index, 1);
-
-        saveDataToFile(); 
-        pubSub.publish("CV_DELETED", { cvDeleted: cv }); 
-
-
-        DB.cvs.splice(index, 1);
-
-        saveDataToFile(); // Sauvegardez les données après la suppression
-
-        return true;
-    },
+    return true;
+  }
 };

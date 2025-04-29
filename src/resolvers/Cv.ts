@@ -11,6 +11,6 @@ export const Cv = {
     return prisma.cvSkill.findMany({
       where: { cvId: cv.id },
       include: { skill: true },
-    }).then(cvSkills => cvSkills.map(cs => cs.skill));
+    }).then((cvSkills: { skill: any; }[]) => cvSkills.map((cs: { skill: any; }) => cs.skill));
   },
-};
+}  
