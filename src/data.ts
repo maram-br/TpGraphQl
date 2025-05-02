@@ -1,5 +1,4 @@
-
-        export const DB = {
+export const DB = {
   "users": [
     {
       "id": 1,
@@ -57,11 +56,9 @@
   "cvs": [
     {
       "id": 1,
-
       "name": "Alice CV",
       "age": 30,
       "job": "Fullstack Dev",
-
       "userId": 1,
       "skillIds": [
         1,
@@ -84,12 +81,22 @@
       "age": 22,
       "job": "FrontEnd Dev",
       "userId": 2,
-
-      "skillIds": [ 
-
+      "skillIds": [
         1,
         2
       ]
+    },
+    {
+      "name": "My CV",
+      "age": 30,
+      "job": "Designer",
+      "userId": 2,
+      "skillIds": [
+        1,
+        2,
+        3
+      ],
+      "id": 4
     }
   ]
 };
