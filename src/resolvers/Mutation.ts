@@ -5,7 +5,6 @@ import { DB } from "../data";
 import { pubSub } from "../context";
 
 
-// Fonction utilitaire pour sauvegarder les données dans data.ts
 const saveDataToFile = () => {
     const dataPath = path.resolve(__dirname, "../data.ts");
     const fileContent = `
@@ -15,9 +14,8 @@ const saveDataToFile = () => {
     fs.writeFileSync(dataPath, fileContent, { encoding: "utf-8" });
 };
 
-// Définition des mutations
 export const Mutation = {
-    createCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
+    createCv: (_: any, { input }: any, {  }: {  }, info: any) => {
         const cvsLength = DB.cvs.length;
         input.id = cvsLength === 0 ? 1 : DB.cvs[cvsLength - 1].id + 1;
 
@@ -33,14 +31,14 @@ export const Mutation = {
 
         DB.cvs.push(input);
 
-        saveDataToFile(); // Sauvegardez les données après l'ajout
+        saveDataToFile();
 
         pubSub.publish("CV_ADDED", { cvAdded: input }); 
 
         return input;
     },
 
-    updateCv: (_: any, { input }: any, { db }: { db: any }, info: any) => {
+    updateCv: (_: any, { input }: any, {  }: { }, info: any) => {
         const index = DB.cvs.findIndex(cv => cv.id === input.id);
         if (index === -1) throw new Error("CV not found");
 
@@ -63,14 +61,14 @@ export const Mutation = {
 
         DB.cvs[index] = updated;
 
-        saveDataToFile(); // Sauvegardez les données après la mise à jour
+        saveDataToFile();
 
         pubSub.publish("CV_UPDATED", { cvUpdated: updated }); 
 
         return updated;
     },
 
-    removeCv: (_: any, { id }: { id: number }, { db }: { db: any }) => {
+    removeCv: (_: any, { id }: { id: number }, {  }: { }) => {
         const index = DB.cvs.findIndex(cv => cv.id === id);
         if (index === -1) throw new Error("CV not found");
 
@@ -80,10 +78,6 @@ export const Mutation = {
         saveDataToFile(); 
         pubSub.publish("CV_DELETED", { cvDeleted: cv }); 
 
-
-        DB.cvs.splice(index, 1);
-
-        saveDataToFile(); // Sauvegardez les données après la suppression
 
         return true;
     },
